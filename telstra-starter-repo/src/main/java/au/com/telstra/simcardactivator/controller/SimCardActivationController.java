@@ -1,14 +1,18 @@
 package au.com.telstra.simcardactivator.controller;
 
 import au.com.telstra.simcardactivator.model.ActivationRequest;
+import au.com.telstra.simcardactivator.model.SimCardActivation;
+import au.com.telstra.simcardactivator.model.SimCardActivationDTO;
 import au.com.telstra.simcardactivator.service.SimCardActivationService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
@@ -53,5 +57,29 @@ public class SimCardActivationController {
         } else {
             return ResponseEntity.ok("SIM card activation failed");
         }
+    }
+    
+    @GetMapping("/query")
+    public ResponseEntity<?> getSimCardActivation(@RequestParam Long simCardId) {
+        logger.info("Received query request for SIM card ID: {}", simCardId);
+        
+        // Retrieve the activation record by ID
+        SimCardActivation activation = activationService.getSimCardActivationById(simCardId);
+        
+        // Check if record was found
+        if (activation == null) {
+            logger.error("No SIM card activation found for ID: {}", simCardId);
+            return ResponseEntity.notFound().build();
+        }
+        
+        // Create DTO with the required response structure
+        SimCardActivationDTO responseDto = new SimCardActivationDTO(
+            activation.getIccid(),
+            activation.getCustomerEmail(),
+            activation.isActive()
+        );
+        
+        logger.info("Retrieved SIM card activation for ID: {}", simCardId);
+        return ResponseEntity.ok(responseDto);
     }
 }

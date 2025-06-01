@@ -1,0 +1,3 @@
+au\com\telstra\simcardactivator\SimCardActivationPersistenceTest$TestConfig.class
+stepDefinitions\SimCardActivatorStepDefinitions.class
+au\com\telstra\simcardactivator\SimCardActivationPersistenceTest.class
